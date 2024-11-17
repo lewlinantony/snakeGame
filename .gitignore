@@ -1,0 +1,14 @@
+# Build and debug files
+build/
+*.o
+*.log
+main.dSYM/
+
+# macOS specific files
+.DS_Store
+
+# VS Code settings (optional, if you don't want to share)
+.vscode/
+
+# Other temporary or system files
+Thumbs.db
