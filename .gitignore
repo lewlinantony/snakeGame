@@ -1,7 +1,11 @@
 # Build and debug files
 build/
+*.dSYM/
+*.plist
 *.o
-*.log
+*.a
+*.bin
+*.exe
 main.dSYM/
 
 # macOS specific files
