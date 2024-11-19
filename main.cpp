@@ -26,7 +26,6 @@ bool EventTriggered(){
 }
 
 bool elementInDeque(Vector2 element, std::deque<Vector2> deque){
-    std::cout<<deque.size()<<std::endl;
     for(unsigned int i=0;i<deque.size();i++){
         if(Vector2Equals(deque[i],element)){
             return true;
@@ -35,7 +34,42 @@ bool elementInDeque(Vector2 element, std::deque<Vector2> deque){
     return false;
 }
 
+class ResourceManager{
 
+    public:
+
+        class TextureResource{
+            private:
+                bool loaded;
+                Texture2D texture;
+
+            public:
+
+                TextureResource(const std::string& imagePath){ //const is used to ensure that we dont change the path by accident and "&" is for pass by reference so we dont need to make a copy of the path
+                    Image image = LoadImage(imagePath.c_str()); // converts the cpp string to a c string probably because of the restrictions of the LoadImage()??
+                    if( image.data == nullptr){
+                        std::cerr << "Failed to load image: " << imagePath << std::endl;
+                        return;                        
+                    }
+                    texture = LoadTextureFromImage(image);
+                    UnloadImage(image);
+                    loaded = (texture.id != 0);
+                    if(texture.id == 0)
+                        std::cerr << "Failed to create texture from image: " << imagePath << std::endl;
+
+                }
+
+                ~TextureResource(){
+                    if(loaded){
+                        UnloadTexture(texture);
+                    }
+                }
+
+                Texture2D get() const { return texture;} // to get the texture
+                bool isLoaded() const { return loaded;} // to check if loaded or not
+        };
+        
+};
 
 
 class Snake{
@@ -76,22 +110,19 @@ class Snake{
 class Food{
     public:
         Vector2 position;
-        Texture2D texture;
+        ResourceManager::TextureResource texture = ResourceManager::TextureResource("resources/fud.png");;
+        
+
 
     Food(std::deque<Vector2> snakeBody){
-        Image image = LoadImage("resources/fud.png");
-        texture = LoadTextureFromImage(image);
-        UnloadImage(image);
-        position = GenerateRandomPos(snakeBody); 
+        position = GenerateRandomPos(snakeBody);                 
     }
 
-    ~Food(){
-        UnloadTexture(texture);
-    }
+
 
     Vector2 GenerateRandomPos(std::deque <Vector2> snakeBody){
-        float x = GetRandomValue(0,cellCount-1);    //
-        float y = GetRandomValue(0,cellCount-1);    //manual adjustments 
+        float x = GetRandomValue(0,cellCount-1);    
+        float y = GetRandomValue(0,cellCount-1);    
         Vector2 position = Vector2{x,y};
         if (elementInDeque(position,snakeBody)){
             return GenerateRandomPos(snakeBody);
@@ -103,10 +134,9 @@ class Food{
 
 
     void Draw(){
-
-        float scale = (static_cast<float>(cellSize) / texture.width)*1.6;
+        float scale = (static_cast<float>(cellSize) / texture.get().width)*1.6;
         float adjustment = -0.2;
-        DrawTextureEx(texture,{offset+(position.x+adjustment)*cellSize,offset+(position.y+adjustment)*cellSize},0.0f,scale,WHITE);
+        DrawTextureEx(texture.get(),{offset+(position.x+adjustment)*cellSize,offset+(position.y+adjustment)*cellSize},0.0f,scale,WHITE);
     }
 
 };
@@ -114,7 +144,7 @@ class Food{
 
 class Game{
     public:
-    Snake snake = Snake();
+    Snake snake;
     Food food = Food(snake.body);
     bool running = true;
 
@@ -197,9 +227,8 @@ int main() {
             game.snake.direction = {1,0};
         }        
 
-        ClearBackground(green);
-
         DrawRectangleLinesEx(rect,5,dgreen);
+
         if(game.running){
             DrawText("Snake Game",offset-5,14,28,dgreen);
             game.Draw();
@@ -225,7 +254,8 @@ int main() {
                 }         
                 game.running=true;
             }
-        } 
+        }
+        ClearBackground(green); 
 
         
         EndDrawing();
