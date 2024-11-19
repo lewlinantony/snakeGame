@@ -142,7 +142,7 @@ class Game{
     void checkCollisionApple(){
         if (Vector2Equals(snake.body[0],food.position)){
             food.position = food.GenerateRandomPos(snake.body);
-            interval*=0.9;
+            interval*=0.99;
             snake.addSegment=true;
         }
     }
@@ -209,36 +209,20 @@ int main() {
             DrawText("Score :",(cellCount*cellSize)/2-20,((cellCount*cellSize)/2)+40,33,dgreen);
             DrawText(TextFormat("%d", (int)(game.snake.body.size() - 3)), (cellCount*cellSize)/2+120,((cellCount*cellSize)/2)+40, 33, dgreen);    
             DrawText("Press a playable key to continue",180,600,20,dgreen);        
-            if (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D)) {
-                if (IsKeyDown(KEY_SPACE)) {
-                    game.snake.direction = {1,0};
-                }
-                else if (IsKeyDown(KEY_UP)) {
-                    game.snake.direction = {0,-1};
-                }
-                else if (IsKeyDown(KEY_DOWN)) {              
-                    game.snake.direction = {0,1};
-                }                
-                else if (IsKeyDown(KEY_LEFT)) {
+            if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_W) || IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D)) {
+                if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
                     game.snake.direction = {-1,0};
                 }
-                else if (IsKeyDown(KEY_RIGHT)) {
-                    game.snake.body={game.snake.body[2],game.snake.body[1],game.snake.body[0]};
-                    game.snake.direction = {1,0};
-                }
-                else if (IsKeyDown(KEY_W)) {
+                else if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) {
                     game.snake.direction = {0,-1};
                 }
-                else if (IsKeyDown(KEY_A)) {
-                    game.snake.direction = {-1,0};
-                }
-                else if (IsKeyDown(KEY_S)) {
+                else if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) {              
                     game.snake.direction = {0,1};
-                }
-                else if (IsKeyDown(KEY_D)) {
-                    game.snake.direction = {1,0};
-                    game.snake.body={game.snake.body[2],game.snake.body[1],game.snake.body[0]};
                 }                
+                else if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
+                    game.snake.body={game.snake.body[2],game.snake.body[1],game.snake.body[0]};
+                    game.snake.direction = {1,0};
+                }         
                 game.running=true;
             }
         } 
