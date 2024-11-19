@@ -4,6 +4,7 @@
 #include <vector>
 #include <deque>
 #include <raymath.h>
+#include <unordered_set>
 
 Color green = {170,200,90,255};
 Color dgreen = {40,50,24,255};
@@ -13,7 +14,7 @@ int cellCount = 25;
 double interval = 0.2;
 double lastupdate = 0;
 int offset = 50;
-
+int score = 0;
 
 bool EventTriggered(){
     double currentTime = GetTime();
@@ -73,13 +74,22 @@ class ResourceManager{
 
 
 class Snake{
-    
+    private:
+            std::string positionKey(const Vector2& pos) const {
+                return std::to_string(static_cast<int>(pos.x)) + "," + std::to_string(static_cast<int>(pos.y));
+    }
     public:
-        std::deque<Vector2> body = {Vector2{6,9},Vector2{5,9},Vector2{4,9}};
-        Vector2 direction = Vector2{1,0};
+        std::deque<Vector2> body;
+        Vector2 direction;
         bool addSegment = false;
+        std::unordered_set<std::string> headLessBody;
 
+        Snake(){
+            body = {Vector2{6,9},Vector2{5,9},Vector2{4,9}};
+            direction = Vector2{1,0};
+            
 
+        }
         void Draw(){
             for(unsigned int i=0;i<body.size();i++){
                 float x = body[i].x;
@@ -165,6 +175,7 @@ class Game{
     void checkCollisionEdges(){
         if(snake.body[0].x==cellCount || snake.body[0].x==-1 || snake.body[0].y==cellCount || snake.body[0].y==-1){
             interval = 0.2;
+            score = snake.body.size()-3;
             GameOver();
         }
     }
@@ -182,6 +193,7 @@ class Game{
         headlessBody.pop_front();
         if(elementInDeque(snake.body[0],headlessBody)){
             interval = 0.2;
+            score = snake.body.size()-3;
             GameOver();
         }
     }
@@ -236,7 +248,7 @@ int main() {
         else{    
             DrawText("Game Over",(cellCount*cellSize)/2-50,(cellCount*cellSize)/2,40,dgreen);
             DrawText("Score :",(cellCount*cellSize)/2-20,((cellCount*cellSize)/2)+40,33,dgreen);
-            DrawText(TextFormat("%d", (int)(game.snake.body.size() - 3)), (cellCount*cellSize)/2+120,((cellCount*cellSize)/2)+40, 33, dgreen);    
+            DrawText(TextFormat("%d", score), (cellCount*cellSize)/2+120,((cellCount*cellSize)/2)+40, 33, dgreen);    
             DrawText("Press a playable key to continue",180,600,20,dgreen);        
             if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_W) || IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D)) {
                 if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
