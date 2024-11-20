@@ -16,7 +16,7 @@ double lastupdate = 0;
 int offset = 50;
 int score = 0;
 
-bool EventTriggered(){
+bool EventTriggered(){ // to control the speed of the snake or how fast the snake updates
     double currentTime = GetTime();
     if(currentTime- lastupdate >= interval){
         lastupdate = currentTime;
@@ -26,7 +26,7 @@ bool EventTriggered(){
 
 }
 
-bool elementInDeque(Vector2 element, std::deque<Vector2> deque){
+bool headInBody(Vector2 element,const std::deque<Vector2>& deque){ // to check if the snake has hit its body or not
     for(unsigned int i=0;i<deque.size();i++){
         if(Vector2Equals(deque[i],element)){
             return true;
@@ -101,7 +101,7 @@ class Snake{
 
         }
 
-        void Update(){
+        void Update(){ //update the snakes body
             body.push_front(Vector2Add(body[0],direction));            
             if (addSegment)
                 addSegment=false;
@@ -109,7 +109,7 @@ class Snake{
                 body.pop_back();          
         }
 
-        void reset(){
+        void reset(){ //reset the snake
             float x = GetRandomValue(4,cellCount-4);
             float y = GetRandomValue(4,cellCount-4);
             body = {Vector2{x,y},Vector2{x+1,y},Vector2{x+2,y}};
@@ -130,11 +130,11 @@ class Food{
 
 
 
-    Vector2 GenerateRandomPos(std::deque <Vector2> snakeBody){
+    Vector2 GenerateRandomPos(const std::deque<Vector2>& snakeBody){ //gen random position of the food
         float x = GetRandomValue(0,cellCount-1);    
         float y = GetRandomValue(0,cellCount-1);    
         Vector2 position = Vector2{x,y};
-        if (elementInDeque(position,snakeBody)){
+        if (headInBody(position,snakeBody)){
             return GenerateRandomPos(snakeBody);
         }
         else{
@@ -191,7 +191,7 @@ class Game{
     void checkCollisionSnake(){
         std::deque<Vector2> headlessBody = snake.body;
         headlessBody.pop_front();
-        if(elementInDeque(snake.body[0],headlessBody)){
+        if(headInBody(snake.body[0],headlessBody)){
             interval = 0.2;
             score = snake.body.size()-3;
             GameOver();
@@ -229,10 +229,10 @@ int main() {
         }
 
 
-        if(game.running){
+        if(game.running){ //if game is running we display the snake running else we display the gome over and score and check input for restart
             DrawText("Snake Game",offset-5,14,28,dgreen);
             game.Draw();
-            if (buffer){
+            if (buffer){ // this is to fix a major input bug because the rendering and the input are out of sync and the snake used to do a 180 and end the game
                 if((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) && game.snake.direction.y!=1){
                     game.snake.direction = {0,-1};
                     buffer = false;
