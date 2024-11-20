@@ -214,7 +214,7 @@ int main() {
     rect.y = (float)(offset - 5);
     rect.width = (float)(cellSize * cellCount + 10);
     rect.height = (float)(cellSize * cellCount + 10);
-
+    bool buffer = true;
 
     Game game = Game();
 
@@ -223,21 +223,31 @@ int main() {
 
 
 
-        if(EventTriggered()) game.Update();
-
-        if((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) && game.snake.direction.y!=1){
-            game.snake.direction = {0,-1};
+        if(EventTriggered()) {
+            game.Update();
+            buffer = true;
         }
-        if((IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) && game.snake.direction.y!=-1){
-            game.snake.direction = {0,1};
+
+        if (buffer){
+            if((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) && game.snake.direction.y!=1){
+                game.snake.direction = {0,-1};
+                buffer = false;
+            }
+            if((IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) && game.snake.direction.y!=-1){
+                game.snake.direction = {0,1};
+                buffer = false;
+
+            }
+            if((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && game.snake.direction.x!=1){
+                game.snake.direction = {-1,0};
+                buffer = false;
+            }        
+            if((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && game.snake.direction.x!=-1){
+                game.snake.direction = {1,0};
+                buffer = false;
+            }        
 
         }
-        if((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && game.snake.direction.x!=1){
-            game.snake.direction = {-1,0};
-        }        
-        if((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && game.snake.direction.x!=-1){
-            game.snake.direction = {1,0};
-        }        
 
         DrawRectangleLinesEx(rect,5,dgreen);
 
