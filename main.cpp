@@ -220,7 +220,7 @@ int main() {
 
     while(WindowShouldClose()==false){
         BeginDrawing();
-
+        DrawRectangleLinesEx(rect,5,dgreen);
 
 
         if(EventTriggered()) {
@@ -228,32 +228,30 @@ int main() {
             buffer = true;
         }
 
-        if (buffer){
-            if((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) && game.snake.direction.y!=1){
-                game.snake.direction = {0,-1};
-                buffer = false;
-            }
-            if((IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) && game.snake.direction.y!=-1){
-                game.snake.direction = {0,1};
-                buffer = false;
-
-            }
-            if((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && game.snake.direction.x!=1){
-                game.snake.direction = {-1,0};
-                buffer = false;
-            }        
-            if((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && game.snake.direction.x!=-1){
-                game.snake.direction = {1,0};
-                buffer = false;
-            }        
-
-        }
-
-        DrawRectangleLinesEx(rect,5,dgreen);
 
         if(game.running){
             DrawText("Snake Game",offset-5,14,28,dgreen);
             game.Draw();
+            if (buffer){
+                if((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) && game.snake.direction.y!=1){
+                    game.snake.direction = {0,-1};
+                    buffer = false;
+                }
+                if((IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) && game.snake.direction.y!=-1){
+                    game.snake.direction = {0,1};
+                    buffer = false;
+
+                }
+                if((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && game.snake.direction.x!=1){
+                    game.snake.direction = {-1,0};
+                    buffer = false;
+                }        
+                if((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && game.snake.direction.x!=-1){
+                    game.snake.direction = {1,0};
+                    buffer = false;
+                }        
+
+            }            
         }       
         else{    
             DrawText("Game Over",(cellCount*cellSize)/2-50,(cellCount*cellSize)/2,40,dgreen);
@@ -277,9 +275,8 @@ int main() {
                 game.running=true;
             }
         }
-        ClearBackground(green); 
 
-        
+        ClearBackground(green);         
         EndDrawing();
     }
     
